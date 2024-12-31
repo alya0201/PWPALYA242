@@ -1,19 +1,23 @@
-{% extends "layout.html" %}
+{% extends "base.html" %}
 
-{% block head %}
-<title>Register</title>
-{% endblock %}
+<!-- Register Page -->
+{% block content %}
+<div class="container mx-auto py-10">
+    <h2 class="text-2xl font-bold mb-4">Register</h2>
+    <form action="/register" method="post" class="max-w-md mx-auto bg-white p-6 rounded shadow-md">
+        <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+        <input type="text" name="username" id="username" required
+               class="mt-1 p-2 block w-full border border-gray-300 rounded">
 
-{% block body %}
-<h2>Register</h2>
-<form method="POST">
-    <label>Name:</label><br>
-    <input type="text" name="name" required><br>
-    <label>Email:</label><br>
-    <input type="email" name="email" required><br>
-    <label>Password:</label><br>
-    <input type="password" name="password" required><br>
-    <input type="submit" value="Register">
-</form>
-<a href="{{ url_for('login') }}">Already have an account? Login here</a>
+        <label for="email" class="block text-sm font-medium text-gray-700 mt-4">Email</label>
+        <input type="email" name="email" id="email" required
+               class="mt-1 p-2 block w-full border border-gray-300 rounded">
+
+        <label for="password" class="block text-sm font-medium text-gray-700 mt-4">Password</label>
+        <input type="password" name="password" id="password" required
+               class="mt-1 p-2 block w-full border border-gray-300 rounded">
+
+        <button type="submit" class="mt-6 bg-blue-600 text-white py-2 px-4 rounded">Register</button>
+    </form>
+</div>
 {% endblock %}
