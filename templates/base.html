@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-blue-600 text-white py-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/" class="text-xl font-bold">Flask User Management</a>
+            <div>
+                <a href="/login" class="mr-4 hover:underline">Login</a>
+                <a href="/register" class="hover:underline">Register</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="py-10">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="bg-gray-800 text-white py-4 mt-10">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2024 Flask App. All Rights Reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
