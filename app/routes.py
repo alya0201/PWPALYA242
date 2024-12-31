@@ -1,71 +1,68 @@
-from flask import Blueprint, jsonify, request
-from . import db
-from .models import User
+from flask import render_template, redirect, url_for, request, flash
+from flask_login import login_user, logout_user, login_required, current_user
+from app import app
+from app.models import User  # Assuming User model is in models.py
+from werkzeug.security import check_password_hash
+from flask_login import LoginManager
+from app.forms import RegistrationForm, LoginForm  # Assuming forms.py for handling forms
 
-main = Blueprint('main', __name__)
 
-@main.route('/users', methods=['GET'])
-def get_users():
-    users = User.query.all()
-    return jsonify(
-        [
-            {"id": user.id,
-             "name": user.name, 
-             "email": user.email
-            } 
-            for user in users
-        ]
-    )
+# Home Route
+@app.route('/')
+def home():
+    return render_template('dashboard.html')
 
-@main.route('/users/<int:user_id>', methods=['GET'])
-def get_users(user_id):
-    user = User.query.get(user_id)
-    if user :
-        return jsonify(
-            {
-                "id": user.id,
-                "name": user.name,
-                "email": user.email
-            }
-            for user in user
+
+# Register Route
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        # Check if the user already exists
+        user_exists = User.query.filter_by(email=form.email.data).first()
+        if user_exists:
+            flash('An account with that email already exists!', 'danger')
+            return redirect(url_for('login'))
+        
+        user = User(
+            username=form.username.data,
+            email=form.email.data,
+            password=form.password.data
         )
-    return jsonify({"message": "user not found"}), 404
+        user.save()
+        flash('Your account has been created!', 'success')
+        return redirect(url_for('login'))
+    
+    return render_template('register.html', form=form)
 
-@main.route('/users', methods=['POST'])
-def create_user():
-    data = request.get_json()
-    name = data.get('name')
-    email = data.get('email')
 
-    if not name or not email:
-        return jsonify({"message": "Name or email are required"}), 400
+# Login Route
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and check_password_hash(user.password_hash, form.password.data):
+            login_user(user)
+            flash('Login successful!', 'success')
+            return redirect(url_for('dashboard'))
+        else:
+            flash('Login unsuccessful. Check your email and password.', 'danger')
+    
+    return render_template('login.html', form=form)
 
-    new_user = User(name=name, email=email)
-    db.session.add(new_user)
-    db.session.commit()
 
-    return jsonify({"message": "Users Created", 
-                    "user": {
-                        "id" : new_user.id, 
-                        "name": new_user.name, 
-                        "email": new_user.email
-                    }
-                    }), 201
+# Dashboard Route (Login Required)
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    return render_template('dashboard.html')
 
-@main.route('/users/<int:user_id>', methods=['PUT'])
-def update_user(user_id):
-    user = User.query.get(user_id)
-    if not user:
-        return jsonify({"message": "User not found"}), 404
 
-    data = request.get_json()
-    user.name = data.get('name', user.name)
-    user.email = data.get('email', user.email)
-
-    return jsonify({"message": "User updated", 
-                    "user": {
-                        "id" : user.id, 
-                        "name": user.name, 
-                        "email": user.email
-                    }
-                    }), 201
+# Logout Route
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have logged out!', 'info')
+    return redirect(url_for('home'))
