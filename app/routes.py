@@ -1,68 +1,47 @@
-from flask import render_template, redirect, url_for, request, flash
+from flask import Flask, render_template, redirect, url_for, request, flash, current_app
 from flask_login import login_user, logout_user, login_required, current_user
-from app import app
-from app.models import User  # Assuming User model is in models.py
+from app.models import User
 from werkzeug.security import check_password_hash
-from flask_login import LoginManager
-from app.forms import RegistrationForm, LoginForm  # Assuming forms.py for handling forms
+from app.forms import RegistrationForm, LoginForm
+from app import db
 
+app = Flask(__name__)
 
-# Home Route
+# Route for favicon.ico
+@app.route('/favicon.ico')
+def favicon():
+    return app.send_static_file('favicon.ico')
+
+# Single route for '/'
 @app.route('/')
-def home():
-    return render_template('dashboard.html')
+def dashboard():
+    users = [
+        {'id': 1, 'username': 'JohnDoe', 'email': 'john@example.com', 'role': 'Admin'},
+        {'id': 2, 'username': 'JaneDoe', 'email': 'jane@example.com', 'role': 'User'}
+    ]
+    return render_template('dashboard.html', users=users)
 
+@app.route('/add-user', methods=['GET', 'POST'])
+def add_user():
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        role = request.form['role']
+        print(f'User added: {username}, {email}, {role}')
+        return redirect(url_for('dashboard'))
+    return render_template('add_user.html')
 
-# Register Route
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        # Check if the user already exists
-        user_exists = User.query.filter_by(email=form.email.data).first()
-        if user_exists:
-            flash('An account with that email already exists!', 'danger')
-            return redirect(url_for('login'))
-        
-        user = User(
-            username=form.username.data,
-            email=form.email.data,
-            password=form.password.data
-        )
-        user.save()
-        flash('Your account has been created!', 'success')
-        return redirect(url_for('login'))
-    
-    return render_template('register.html', form=form)
-
-
-# Login Route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user and check_password_hash(user.password_hash, form.password.data):
-            login_user(user)
-            flash('Login successful!', 'success')
-            return redirect(url_for('dashboard'))
-        else:
-            flash('Login unsuccessful. Check your email and password.', 'danger')
-    
-    return render_template('login.html', form=form)
+    return render_template('login.html')
 
-
-# Dashboard Route (Login Required)
-@app.route('/dashboard')
-@login_required
-def dashboard():
-    return render_template('dashboard.html')
-
-
-# Logout Route
 @app.route('/logout')
-@login_required
 def logout():
-    logout_user()
-    flash('You have logged out!', 'info')
-    return redirect(url_for('home'))
+    return render_template('logout.html')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    return render_template('register.html')
+
+if __name__ == '__main__':
+    app.run(debug=True)

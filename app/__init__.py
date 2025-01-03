@@ -1,37 +1,27 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 from flask_login import LoginManager
-from dotenv import load_dotenv
-import os
+from app.models import User  # Pastikan model User Anda diimport
 
-# Initialize extensions
 db = SQLAlchemy()
-migrate = Migrate()
 login_manager = LoginManager()
 
 def create_app():
-    # Load environment variables
-    load_dotenv()
-
-    # Initialize Flask application
     app = Flask(__name__)
-
-    # Load configuration from environment variables
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///project.db')  # Defaults to SQLite
-    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key')  # Set a secret key
+    app.config['SECRET_KEY'] = 'your_secret_key'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-    # Initialize extensions
-    db.init_app(app)
-    migrate.init_app(app, db)
-    login_manager.init_app(app)
-
-    # Set the login view
-    login_manager.login_view = 'login'
-
-    # Import routes and models
-    with app.app_context():
-        from app import routes, models  # Ensures models and routes are loaded
     
+    db.init_app(app)
+    login_manager.init_app(app)
+    login_manager.login_view = 'login'  # Halaman login jika user tidak terautentikasi
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))  # Ambil user dari database berdasarkan ID
+
+    with app.app_context():
+        from . import routes
+        db.create_all()
+
     return app
