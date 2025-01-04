@@ -7,11 +7,6 @@ from app import db
 
 app = Flask(__name__)
 
-# Route for favicon.ico
-@app.route('/favicon.ico')
-def favicon():
-    return app.send_static_file('favicon.ico')
-
 # Single route for '/'
 @app.route('/')
 def dashboard():

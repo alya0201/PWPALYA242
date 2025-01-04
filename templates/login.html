@@ -1,19 +1,15 @@
-{% extends "base.html" %}
-
-<!-- Login Page -->
-{% block content %}
-<div class="container mx-auto py-10">
-    <h2 class="text-2xl font-bold mb-4">Login</h2>
-    <form action="/login" method="post" class="max-w-md mx-auto bg-white p-6 rounded shadow-md">
-        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-        <input type="email" name="email" id="email" required
-               class="mt-1 p-2 block w-full border border-gray-300 rounded">
-
-        <label for="password" class="block text-sm font-medium text-gray-700 mt-4">Password</label>
-        <input type="password" name="password" id="password" required
-               class="mt-1 p-2 block w-full border border-gray-300 rounded">
-
-        <button type="submit" class="mt-6 bg-blue-600 text-white py-2 px-4 rounded">Login</button>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <h1>Login</h1>
+    <form method="POST">
+        <input type="email" name="email" placeholder="Email" required><br>
+        <input type="password" name="password" placeholder="Password" required><br>
+        <button type="submit">Login</button>
     </form>
-</div>
-{% endblock %}
+</body>
+</html>

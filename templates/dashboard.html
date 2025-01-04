@@ -1,36 +1,36 @@
-{% extends "base.html" %}
-
-<!-- Dashboard Page -->
-{% block content %}
-<div class="container mx-auto py-10">
-    <h2 class="text-2xl font-bold mb-4">Dashboard</h2>
-    <div class="mb-4">
-        <a href="/add-user" class="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">Add User</a>
-    </div>
-    <table class="min-w-full bg-white border rounded">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <h1>Dashboard</h1>
+    <a href="/add_user">Add User</a> | <a href="/logout">Logout</a>
+    <table>
         <thead>
-        <tr class="bg-gray-200 text-left text-gray-600 uppercase text-sm">
-            <th class="py-3 px-4">ID</th>
-            <th class="py-3 px-4">Username</th>
-            <th class="py-3 px-4">Email</th>
-            <th class="py-3 px-4">Role</th>
-            <th class="py-3 px-4">Actions</th>
-        </tr>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
         </thead>
-        <tbody class="text-gray-700">
-        {% for user in users %}
-        <tr>
-            <td class="py-3 px-4">{{ user.id }}</td>
-            <td class="py-3 px-4">{{ user.username }}</td>
-            <td class="py-3 px-4">{{ user.email }}</td>
-            <td class="py-3 px-4">{{ user.role }}</td>
-            <td class="py-3 px-4">
-                <a href="/edit/{{ user.id }}" class="text-blue-600 hover:underline">Edit</a>
-                <a href="/delete/{{ user.id }}" class="text-red-600 hover:underline ml-4">Delete</a>
-            </td>
-        </tr>
-        {% endfor %}
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.role }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                    <a href="/edit_user/{{ user.id }}">Edit</a>
+                    <a href="/delete_user/{{ user.id }}">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
         </tbody>
     </table>
-</div>
-{% endblock %}
+</body>
+</html>
