@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Flask App{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <nav class="bg-blue-500 text-white px-6 py-4 flex justify-between">
+        <a href="{{ url_for('main.dashboard') }}" class="font-bold text-xl">Flask CRUD</a>
+        <div>
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('main.logout') }}" class="hover:underline">Logout</a>
+            {% else %}
+                <a href="{{ url_for('main.login') }}" class="hover:underline">Login</a> |
+                <a href="{{ url_for('main.register') }}" class="hover:underline">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+    <div class="container mx-auto mt-6">
+        {% block content %}{% endblock %}
+    </div>
+    <footer class="text-center bg-gray-800 text-white py-4 mt-6">
+        &copy; 2025 Flask CRUD App
+    </footer>
+</body>
+</html>
