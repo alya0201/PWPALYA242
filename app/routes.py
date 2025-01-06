@@ -3,6 +3,7 @@ from app import db
 from app.models import User
 from .forms import RegistrationForm  # Hanya mengimpor RegistrationForm
 from .forms import LoginForm
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 main = Blueprint('main', __name__)
@@ -47,7 +48,7 @@ def login():
         if user and user.check_password(password):
             session['user_id'] = user.id
             current_app.logger.info(f"Login successful for user_id: {user.id}")
-            return redirect(url_for('main.dashboard'))
+            return redirect(url_for('main.dashboard'))  # Perbaikan indentasi
         else:
             current_app.logger.warning("Invalid login attempt")
             flash('Login failed. Check your email and password.', 'danger')
@@ -56,13 +57,23 @@ def login():
 
 @main.route('/dashboard')
 def dashboard():
-    if 'user_id' not in session:
-        app.logger.warning("Unauthorized access to dashboard")
+    user_id = session.get('user_id')
+    if not user_id:
+        current_app.logger.warning("Unauthorized access to dashboard")
         flash('Please login to access this page.', 'danger')
         return redirect(url_for('main.login'))
     
-    app.logger.info(f"Dashboard accessed by user_id: {session.get('user_id')}")
-    users = User.query.all()
+    # Validasi pengguna dari database
+    user = User.query.get(user_id)
+    if not user:
+        current_app.logger.warning(f"Invalid session detected for user_id: {user_id}")
+        flash('Your session is invalid. Please login again.', 'danger')
+        return redirect(url_for('main.login'))
+    
+    current_app.logger.info(f"Dashboard accessed by user_id: {user_id}")
+    
+    # Query data pengguna
+    users = User.query.limit(100).all()  # Batasi hasil jika tabel besar
     return render_template('dashboard.html', users=users)
 
 # Create User route
